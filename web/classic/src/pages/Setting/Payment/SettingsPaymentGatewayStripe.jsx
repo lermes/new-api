@@ -31,6 +31,9 @@ import { BookOpen, TriangleAlert } from 'lucide-react';
 export default function SettingsPaymentGateway(props) {
   const { t } = useTranslation();
   const sectionTitle = props.hideSectionTitle ? undefined : t('Stripe 设置');
+  const callbackAddress = removeTrailingSlash(
+    props.options.CustomCallbackAddress || props.options.ServerAddress || '',
+  );
   const [loading, setLoading] = useState(false);
   const [inputs, setInputs] = useState({
     StripeApiSecret: '',
@@ -73,8 +76,8 @@ export default function SettingsPaymentGateway(props) {
   };
 
   const submitStripeSetting = async () => {
-    if (props.options.ServerAddress === '') {
-      showError(t('请先填写服务器地址'));
+    if (callbackAddress === '') {
+      showError(t('请先填写服务器地址或回调地址'));
       return;
     }
 
@@ -183,9 +186,7 @@ export default function SettingsPaymentGateway(props) {
                 完成联调。
                 <br />
                 {t('回调地址')}：
-                {props.options.ServerAddress
-                  ? removeTrailingSlash(props.options.ServerAddress)
-                  : t('网站地址')}
+                {callbackAddress || t('网站地址')}
                 /api/stripe/webhook
               </>
             }

@@ -3309,7 +3309,7 @@
     "该套餐未配置 Creem": "Gói này chưa cấu hình Creem",
     "该套餐未配置 Stripe": "Gói này chưa cấu hình Stripe",
     "该数据可能不可信，请谨慎使用": "Dữ liệu này có thể không đáng tin cậy, vui lòng sử dụng thận trọng",
-    "该服务器地址将影响支付回调地址以及默认首页展示的地址，请确保正确配置": "Địa chỉ máy chủ này sẽ ảnh hưởng đến địa chỉ gọi lại thanh toán và địa chỉ hiển thị trang chủ mặc định, vui lòng đảm bảo cấu hình chính xác",
+    "该服务器地址将影响默认支付回调地址以及默认首页展示的地址，请确保正确配置": "Địa chỉ máy chủ này sẽ ảnh hưởng đến địa chỉ gọi lại thanh toán mặc định và địa chỉ hiển thị trang chủ mặc định, vui lòng đảm bảo cấu hình chính xác",
     "该模型存在固定价格与倍率计费方式冲突，请确认选择": "Mô hình này có xung đột giữa giá cố định và phương thức tính phí theo tỷ lệ, vui lòng xác nhận lựa chọn",
     "该模型补全倍率由后端固定为 {{ratio}}。补全价格不能在这里修改。": "Tỷ lệ hoàn thành của mô hình này được backend cố định ở {{ratio}}. Không thể chỉnh giá hoàn thành tại đây.",
     "该渠道已开启请求透传，参数覆写、模型重定向等 NewAPI 内置功能将失效，非最佳实践。": "Kênh này đã bật truyền qua yêu cầu; các tính năng tích hợp của NewAPI như ghi đè tham số và chuyển hướng mô hình sẽ bị vô hiệu hóa. Đây không phải là thực hành tốt nhất.",

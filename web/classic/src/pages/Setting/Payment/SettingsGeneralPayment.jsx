@@ -171,7 +171,7 @@ export default function SettingsGeneralPayment(props) {
             placeholder={'https://yourdomain.com'}
             style={{ width: '100%' }}
             extraText={t(
-              '该服务器地址将影响支付回调地址以及默认首页展示的地址，请确保正确配置',
+              '该服务器地址将影响默认支付回调地址以及默认首页展示的地址，请确保正确配置',
             )}
           />
           <Row
