@@ -688,7 +688,7 @@ const DefaultHome = ({
             <div>
               <img
                 className='infinity-logo'
-                src='https://raw.githubusercontent.com/lermes/oss/main/InfinityLLM_Logo_Full%20(1).svg'
+                src='/home-logo.svg'
                 alt='Infinity LLM'
               />
               <h1
