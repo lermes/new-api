@@ -146,6 +146,7 @@ type PaymentComplianceDefaults = {
 }
 
 type PaymentSettingsSectionProps = {
+  serverAddress?: string
   defaultValues: PaymentFormValues
   waffoDefaultValues: WaffoSettingsValues
   waffoPancakeDefaultValues: WaffoPancakeSettingsValues
@@ -153,6 +154,7 @@ type PaymentSettingsSectionProps = {
 }
 
 export function PaymentSettingsSection({
+  serverAddress = '',
   defaultValues,
   waffoDefaultValues,
   waffoPancakeDefaultValues,
@@ -261,6 +263,10 @@ export function PaymentSettingsSection({
       CreemProducts: formatJsonForEditor(defaultValues.CreemProducts),
     },
   })
+  const watchedCallbackAddress = form.watch('CustomCallbackAddress')
+  const stripeWebhookBaseUrl = removeTrailingSlash(
+    watchedCallbackAddress || serverAddress
+  )
 
   React.useEffect(() => {
     const parsedDefaults = JSON.parse(defaultsSignature) as PaymentFormValues
@@ -1107,7 +1113,9 @@ export function PaymentSettingsSection({
                 <li>
                   {t('Webhook URL:')}{' '}
                   <code className='rounded bg-blue-100 px-1 py-0.5 text-xs dark:bg-blue-900'>
-                    {'<ServerAddress>/api/stripe/webhook'}
+                    {stripeWebhookBaseUrl
+                      ? `${stripeWebhookBaseUrl}/api/stripe/webhook`
+                      : '<ServerAddress>/api/stripe/webhook'}
                   </code>
                 </li>
                 <li>

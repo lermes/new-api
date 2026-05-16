@@ -63,10 +63,11 @@ export function PaymentConfirmDialog({
   const hasDiscount = discountRate > 0 && discountRate < 1 && paymentAmount > 0
   const originalAmount = hasDiscount ? paymentAmount / discountRate : 0
   const discountAmount = hasDiscount ? originalAmount - paymentAmount : 0
+  const isStripe = paymentMethod?.type === 'stripe'
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className='max-sm:w-[calc(100vw-1.5rem)] sm:max-w-md'>
+      <AlertDialogContent className='max-sm:w-[calc(100vw-1.5rem)] sm:max-w-lg'>
         <AlertDialogHeader>
           <AlertDialogTitle className='text-xl font-semibold'>
             {t('Confirm Payment')}
@@ -77,11 +78,11 @@ export function PaymentConfirmDialog({
         </AlertDialogHeader>
 
         <div className='space-y-3 py-3 sm:space-y-4 sm:py-4'>
-          <div className='flex items-center justify-between'>
+          <div className='flex items-center justify-between gap-4'>
             <span className='text-muted-foreground text-sm'>
               {t('Topup Amount')}
             </span>
-            <span className='text-lg font-semibold'>
+            <span className='text-right text-lg font-semibold'>
               {formatLocalCurrencyAmount(topupAmount * usdExchangeRate, {
                 digitsLarge: 2,
                 digitsSmall: 2,
@@ -90,14 +91,14 @@ export function PaymentConfirmDialog({
             </span>
           </div>
 
-          <div className='flex items-center justify-between'>
+          <div className='flex items-center justify-between gap-4'>
             <span className='text-muted-foreground text-sm'>
               {t('You Pay')}
             </span>
             {calculating ? (
               <Skeleton className='h-6 w-24' />
             ) : (
-              <div className='flex items-baseline gap-2'>
+              <div className='flex flex-wrap items-baseline justify-end gap-2 text-right'>
                 <span className='text-2xl font-semibold'>
                   {formatCurrency(paymentAmount)}
                 </span>
@@ -122,11 +123,11 @@ export function PaymentConfirmDialog({
           )}
 
           <div className='border-t pt-4'>
-            <div className='flex items-center justify-between'>
+            <div className='flex items-center justify-between gap-4'>
               <span className='text-muted-foreground text-sm'>
                 {t('Payment Method')}
               </span>
-              <div className='flex items-center gap-2'>
+              <div className='flex flex-wrap items-center justify-end gap-x-2 gap-y-1 text-right'>
                 {getPaymentIcon(
                   paymentMethod?.type,
                   'h-4 w-4',
@@ -134,6 +135,11 @@ export function PaymentConfirmDialog({
                   paymentMethod?.name
                 )}
                 <span className='font-medium'>{paymentMethod?.name}</span>
+                {isStripe && (
+                  <span className='text-muted-foreground text-xs'>
+                    ({t('Approx. 4.8% fee')})
+                  </span>
+                )}
               </div>
             </div>
           </div>

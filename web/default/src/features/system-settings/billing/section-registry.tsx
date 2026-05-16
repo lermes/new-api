@@ -138,6 +138,7 @@ const BILLING_SECTIONS = [
     descriptionKey: 'Configure payment gateway integrations',
     build: (settings: BillingSettings) => (
       <PaymentSettingsSection
+        serverAddress={settings.ServerAddress}
         defaultValues={{
           PayAddress: settings.PayAddress,
           EpayId: settings.EpayId,

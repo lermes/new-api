@@ -108,6 +108,7 @@ export function Footer(props: FooterProps) {
   const displayName = systemName || props.name || 'New API'
   const isDemoSiteMode = Boolean(demoSiteEnabled)
   const currentYear = new Date().getFullYear()
+  const showFooterContent = false
 
   const fallbackColumns = useMemo<FooterColumnProps[]>(
     () => [
@@ -193,10 +194,16 @@ export function Footer(props: FooterProps) {
 
   return (
     <footer
-      className={cn('border-border/40 relative z-10 border-t', props.className)}
+      className={cn(
+        'relative z-10',
+        showFooterContent && 'border-border/40 border-t',
+        props.className
+      )}
     >
       <div className='mx-auto max-w-6xl px-6 py-12 md:py-16'>
-        <div className='flex flex-col justify-between gap-10 md:flex-row md:gap-16'>
+        {/* Footer content is intentionally hidden; keep the copyright row below. */}
+        {showFooterContent && (
+          <div className='flex flex-col justify-between gap-10 md:flex-row md:gap-16'>
           {/* Brand column */}
           <div className='shrink-0'>
             <Link to='/' className='group flex items-center gap-2.5'>
@@ -233,10 +240,16 @@ export function Footer(props: FooterProps) {
               ))}
             </div>
           )}
-        </div>
+          </div>
+        )}
 
         {/* Bottom section */}
-        <div className='border-border/30 mt-12 flex flex-col items-center justify-between gap-3 border-t pt-6 sm:flex-row'>
+        <div
+          className={cn(
+            'border-border/30 flex flex-col items-center justify-between gap-3 border-t pt-6 sm:flex-row',
+            showFooterContent && 'mt-12'
+          )}
+        >
           <p className='text-muted-foreground/40 text-xs'>
             &copy; {currentYear} {displayName}.{' '}
             {props.copyright ?? t('footer.defaultCopyright')}
