@@ -428,9 +428,9 @@ function DocsTable(props: { headers: string[]; rows: DocsTableRow[] }) {
 
 function Sidebar(props: { activeSlug: DocsSlug }) {
   return (
-    <aside className='border-border max-h-[46svh] overflow-y-auto border-b bg-transparent lg:fixed lg:top-16 lg:bottom-0 lg:left-0 lg:max-h-none lg:w-[292px] lg:overflow-visible lg:border-r lg:border-b-0'>
+    <aside className='border-border max-h-[46svh] overflow-y-auto border-b bg-transparent lg:fixed lg:top-16 lg:bottom-0 lg:left-0 lg:max-h-none lg:w-[292px] lg:overflow-y-auto lg:border-r lg:border-b-0'>
       <div className='flex min-h-full flex-col'>
-        <nav className='flex-1 space-y-7 overflow-y-auto px-6 py-8 text-sm lg:h-[calc(100svh-4rem)] lg:py-12'>
+        <nav className='flex-1 space-y-7 px-6 py-8 text-sm lg:py-12'>
           {docsGroups.map((group) => (
             <section key={group.title}>
               <div className='mb-3 px-0 text-sm font-bold tracking-wide text-muted-foreground'>

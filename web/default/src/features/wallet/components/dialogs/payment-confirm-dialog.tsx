@@ -63,7 +63,7 @@ export function PaymentConfirmDialog({
   const hasDiscount = discountRate > 0 && discountRate < 1 && paymentAmount > 0
   const originalAmount = hasDiscount ? paymentAmount / discountRate : 0
   const discountAmount = hasDiscount ? originalAmount - paymentAmount : 0
-  const isStripe = paymentMethod?.type === 'stripe'
+  // const isStripe = paymentMethod?.type === 'stripe'
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -135,11 +135,11 @@ export function PaymentConfirmDialog({
                   paymentMethod?.name
                 )}
                 <span className='font-medium'>{paymentMethod?.name}</span>
-                {isStripe && (
-                  <span className='text-muted-foreground text-xs'>
-                    ({t('Approx. 4.8% fee')})
-                  </span>
-                )}
+                {/*{isStripe && (*/}
+                {/*  <span className='text-muted-foreground text-xs'>*/}
+                {/*    ({t('Approx. 4.8% fee')})*/}
+                {/*  </span>*/}
+                {/*)}*/}
               </div>
             </div>
           </div>
