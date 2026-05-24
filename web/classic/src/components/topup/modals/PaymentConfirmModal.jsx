@@ -107,14 +107,14 @@ const PaymentConfirmModal = ({
           <Text className='text-[14px] font-medium text-slate-900 dark:text-slate-100'>
             {methodName}
           </Text>
-          {methodType === 'stripe' && stripeFeeHint && (
-            <span
-              className='font-normal text-slate-400 dark:text-slate-500'
-              style={{ fontSize: 11, lineHeight: '14px' }}
-            >
-              {stripeFeeHint}
-            </span>
-          )}
+          {/*{methodType === 'stripe' && stripeFeeHint && (*/}
+          {/*  <span*/}
+          {/*    className='font-normal text-slate-400 dark:text-slate-500'*/}
+          {/*    style={{ fontSize: 11, lineHeight: '14px' }}*/}
+          {/*  >*/}
+          {/*    {stripeFeeHint}*/}
+          {/*  </span>*/}
+          {/*)}*/}
         </div>
       </div>
     );
