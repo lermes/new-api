@@ -989,15 +989,15 @@ function GptImagePage() {
         <li>模型：<InlineCode>gpt-image-2</InlineCode></li>
       </ul>
       <h2>选择接口</h2>
-      <p>如果只需要通过一次请求生成或编辑图片，使用 Image API 即可，这也是大多数接入场景推荐的方式。</p>
+      <p>如果只需要通过一次请求生成或编辑图片，使用 Image API 即可。这也是大多数接入场景推荐的方式。</p>
       <p>
         OpenAI 官方还提供了 Responses API 的图片生成工具，适合对话式、多步骤图片工作流。
         如果业务需要多轮改图，请先确认当前模型与端点是否支持 Responses API。
       </p>
       <h2>生成图片</h2>
       <p>
-        Image API 会在 <InlineCode>data[0].b64_json</InlineCode> 返回 base64 图片数据，
-        解码后写入文件即可。
+        Image API 会在 <InlineCode>data[0].b64_json</InlineCode> 返回 base64 图片数据。
+        将它解码后写入文件即可。
       </p>
       <CodeExample
         samples={[
@@ -1011,7 +1011,7 @@ client = OpenAI(api_key="YOUR_API_KEY", base_url="${API_BASE_URL}")
 
 result = client.images.generate(
     model="gpt-image-2",
-    prompt="一张干净的产品摄影图，白色背景上有一盏哑光黑色智能台灯",
+    prompt="一张极简产品摄影图，浅灰背景上摆着一盏磨砂黑智能台灯，柔和侧光",
     size="1024x1024",
     quality="medium",
 )
@@ -1033,7 +1033,7 @@ const client = new OpenAI({
 
 const result = await client.images.generate({
   model: "gpt-image-2",
-  prompt: "一张干净的产品摄影图，白色背景上有一盏哑光黑色智能台灯",
+  prompt: "一张极简产品摄影图，浅灰背景上摆着一盏磨砂黑智能台灯，柔和侧光",
   size: "1024x1024",
   quality: "medium",
 });
@@ -1048,7 +1048,7 @@ fs.writeFileSync("lamp.png", Buffer.from(result.data[0].b64_json, "base64"));`,
   -H "Content-Type: application/json" \\
   -d '{
     "model": "gpt-image-2",
-    "prompt": "一张干净的产品摄影图，白色背景上有一盏哑光黑色智能台灯",
+    "prompt": "一张极简产品摄影图，浅灰背景上摆着一盏磨砂黑智能台灯，柔和侧光",
     "size": "1024x1024",
     "quality": "medium"
   }' | jq -r '.data[0].b64_json' | base64 --decode > lamp.png`,
@@ -1058,7 +1058,7 @@ fs.writeFileSync("lamp.png", Buffer.from(result.data[0].b64_json, "base64"));`,
       <h3>已验证示例输出</h3>
       <p>示例会从 <InlineCode>data[0].b64_json</InlineCode> 解码并保存为 PNG 文件。</p>
       <h2>使用参考图编辑</h2>
-      <p>将一张或多张图片传给 <InlineCode>images.edit</InlineCode>，再用文字描述希望得到的结果。多张输入图片可以作为新构图参考。</p>
+      <p>将一张或多张图片传给 <InlineCode>images.edit</InlineCode>，再用文字描述希望得到的结果。多张输入图片可以作为新构图的参考。</p>
       <CodeExample
         samples={[
           {
@@ -1072,7 +1072,7 @@ client = OpenAI(api_key="YOUR_API_KEY", base_url="${API_BASE_URL}")
 result = client.images.edit(
     model="gpt-image-2",
     image=[open("product.png", "rb"), open("background.png", "rb")],
-    prompt="把产品放到桌面上，保持真实光照。",
+    prompt="把产品自然放进桌面场景中，并保留可信的光影关系。",
     size="1536x1024",
     quality="high",
 )
@@ -1099,7 +1099,7 @@ const images = await Promise.all([
 const result = await client.images.edit({
   model: "gpt-image-2",
   image: images,
-  prompt: "把第一张图中的产品放到第二张图的桌面上，保持真实光照。",
+  prompt: "把第一张图里的产品自然融入第二张图的桌面场景，并保留可信的光影关系。",
   size: "1536x1024",
   quality: "high",
 });
@@ -1114,7 +1114,7 @@ fs.writeFileSync("edited-product.png", Buffer.from(result.data[0].b64_json, "bas
   -F "model=gpt-image-2" \\
   -F "image[]=@product.png" \\
   -F "image[]=@background.png" \\
-  -F "prompt=把第一张图中的产品放到第二张图的桌面上，保持真实光照。" \\
+  -F "prompt=把第一张图里的产品自然融入第二张图的桌面场景，并保留可信的光影关系。" \\
   -F "size=1536x1024" \\
   -F "quality=high" \\
   | jq -r '.data[0].b64_json' | base64 --decode > edited-product.png`,
@@ -1124,7 +1124,7 @@ fs.writeFileSync("edited-product.png", Buffer.from(result.data[0].b64_json, "bas
       <h3>已验证参考图编辑</h3>
       <p>示例将产品图和桌面背景图合成，返回一张新的 1536x1024 PNG。</p>
       <h2>使用蒙版编辑</h2>
-      <p>如果只希望修改指定区域，可以传入与原图尺寸一致、包含 alpha 通道的 mask 文件。</p>
+      <p>当你希望引导模型只修改某个区域时，可以传入 mask。原图和 mask 必须尺寸一致、格式一致，并且 mask 必须包含 alpha 通道。</p>
       <CodeExample
         samples={[
           {
@@ -1139,7 +1139,7 @@ result = client.images.edit(
     model="gpt-image-2",
     image=open("room.png", "rb"),
     mask=open("mask.png", "rb"),
-    prompt="把蒙版区域替换成一个现代胡桃木书架。",
+    prompt="把蒙版区域改成一组现代胡桃木开放书架。",
 )
 
 image_bytes = base64.b64decode(result.data[0].b64_json)
@@ -1154,7 +1154,7 @@ with open("room-bookshelf.png", "wb") as f:
   -F "model=gpt-image-2" \\
   -F "image[]=@room.png" \\
   -F "mask=@mask.png" \\
-  -F "prompt=把蒙版区域替换成一个现代胡桃木书架。" \\
+  -F "prompt=把蒙版区域改成一组现代胡桃木开放书架。" \\
   | jq -r '.data[0].b64_json' | base64 --decode > room-bookshelf.png`,
           },
         ]}
@@ -1163,7 +1163,7 @@ with open("room-bookshelf.png", "wb") as f:
       <p>mask 图片使用 alpha 通道标记可编辑区域，接口返回结果是普通 PNG。</p>
       <h2>流式返回局部图片</h2>
       <p>
-        上游接口文档中提供 <InlineCode>stream</InlineCode> 和{' '}
+        OpenAI 上游接口文档中提供 <InlineCode>stream</InlineCode> 和{' '}
         <InlineCode>partial_images</InlineCode>，用于在最终图完成前接收中间图片。
         这是兼容性相关能力；除非确认当前端点已经支持流式图片事件，否则建议使用标准非流式调用。
       </p>
@@ -1188,9 +1188,9 @@ with open("room-bookshelf.png", "wb") as f:
       <h2>注意事项与限制</h2>
       <ul>
         <li>复杂 prompt 可能需要更长处理时间，业务侧建议设置合理超时或后台任务。</li>
-        <li>文字渲染能力已有提升，但仍不能保证完全准确；Logo、标签、UI mockup 等场景需要人工检查。</li>
+        <li>模型的文字渲染能力已有提升，但仍不能保证完全准确。Logo、标签、UI mockup 等场景需要人工检查。</li>
         <li>跨多次生成时，角色、精确布局、品牌细节可能无法完全保持一致。</li>
-        <li>使用 gpt-image-2 编辑图片时不要传 <InlineCode>input_fidelity</InlineCode>。</li>
+        <li>使用 gpt-image-2 编辑图片时不要传 <InlineCode>input_fidelity</InlineCode>；模型会自动以高保真方式处理输入图片。</li>
         <li>蒙版是对编辑区域的引导，不等于像素级精确选区。</li>
       </ul>
     </>
@@ -1201,18 +1201,16 @@ function NanoBananaPage() {
   return (
     <>
       <p>
-        NanoBanana Pro 是 Gemini 的图像生成服务，支持多种宽高比和分辨率。不同分辨率价格相同，
-        但 4K 图生成速度较慢，不建议默认使用。
+        NanoBanana Pro 是 Gemini 的图像生成服务，支持多种宽高比（1:1、16:9、9:16 等）和分辨率（1K、2K、4K）。
+        不同分辨率价格相同，但 4K 图生成速度较慢，不建议默认使用。
       </p>
       <ul>
         <li>端点：<InlineCode>POST {BASE_URL}/v1beta/models/gemini-3-pro-image-preview:generateContent</InlineCode></li>
-        <li>模型：<InlineCode>gemini-3-pro-image-preview</InlineCode></li>
+        <li>要点：请求体 <InlineCode>contents</InlineCode> 中传入文本描述，<InlineCode>generationConfig</InlineCode> 中设置 <InlineCode>responseModalities</InlineCode>、<InlineCode>imageConfig</InlineCode> 等；响应里从 <InlineCode>candidates[0].content.parts</InlineCode> 取 <InlineCode>inline_data</InlineCode> 得到生成图片。</li>
       </ul>
       <h2>示例代码</h2>
       <p>
-        请求体 <InlineCode>contents</InlineCode> 中传入文本描述，<InlineCode>generationConfig</InlineCode>{' '}
-        中设置 <InlineCode>responseModalities</InlineCode> 和 <InlineCode>imageConfig</InlineCode>。
-        Python SDK 使用下划线命名，REST / cURL 使用驼峰命名。
+        Python 用下划线命名（如 <InlineCode>response_modalities</InlineCode>），REST / cURL 用驼峰命名（如 <InlineCode>responseModalities</InlineCode>），含义相同。
       </p>
       <CodeExample
         samples={[
@@ -1221,57 +1219,109 @@ function NanoBananaPage() {
             language: 'python',
             code: `from google import genai
 from google.genai import types
-import base64
+
+base_url = "${BASE_URL}"
+api_key = "YOUR_API_KEY"
+prompt = "生成一张可爱小海獭抱着贝壳的插画"
+model = "gemini-3-pro-image-preview"
+output_file = "gemini_sdk_generated.png"
+
+# 图片生成配置
+response_modalities = ["IMAGE"]  # 或 ["TEXT", "IMAGE"]
+aspect_ratio = "16:9"  # "1:1","2:3","3:2","3:4","4:3","4:5","5:4","9:16","16:9","21:9"
+image_size = "2K"  # "1K", "2K", "4K"（仅 gemini-3-pro-image-preview 支持）
+
+# 生成参数
+temperature = 1.0
+top_p = 0.95
+max_output_tokens = 8192
+enable_google_search = False  # 是否启用谷歌搜索（会增加延迟与计费，生图建议关闭）
 
 client = genai.Client(
-    api_key="YOUR_API_KEY",
-    http_options=types.HttpOptions(api_version="v1beta", base_url="${BASE_URL}"),
+    api_key=api_key,
+    http_options=types.HttpOptions(api_version="v1beta", base_url=base_url),
 )
 
-response = client.models.generate_content(
-    model="gemini-3-pro-image-preview",
-    contents="生成一只可爱的小海獭图片",
-    config=types.GenerateContentConfig(
-        response_modalities=["IMAGE"],
-        image_config=types.ImageConfig(
-            aspect_ratio="1:1",
-            image_size="2K",
-        ),
+config = types.GenerateContentConfig(
+    response_modalities=response_modalities,
+    temperature=temperature,
+    top_p=top_p,
+    max_output_tokens=max_output_tokens,
+    system_instruction="You are a helpful assistant.",
+    image_config=types.ImageConfig(
+        aspect_ratio=aspect_ratio,
+        image_size=image_size if "pro-image" in model else None,
     ),
 )
+if enable_google_search:
+    config.tools = [{"google_search": {}}]
 
-for part in response.candidates[0].content.parts:
-    if part.inline_data:
-        with open("gemini_sdk_generated.png", "wb") as f:
-            f.write(part.inline_data.data)`,
+response = client.models.generate_content(
+    model=model,
+    contents=[prompt],
+    config=config,
+)
+
+for part in response.parts:
+    if part.text is not None:
+        print(part.text)
+    elif part.inline_data is not None:
+        part.as_image().save(output_file)
+        print(f"图片已保存: {output_file}")`,
           },
           {
             label: 'TypeScript',
             language: 'typescript',
-            code: `import fs from "fs";
+            code: `// ============ 可配置参数（集中管理） ============
+const baseUrl = "${BASE_URL}";
+const apiKey = "YOUR_API_KEY";
+const prompt = "生成一张可爱小海獭抱着贝壳的插画";
+const model = "gemini-3-pro-image-preview";
+const outputFile = "gemini_sdk_generated.png";
+const systemInstruction = "You are a helpful assistant.";
+// 生成配置
+const responseModalities = ["IMAGE"]; // 或 ["TEXT", "IMAGE"]
+const temperature = 1.0; // 随机度，0～2，越高越随机
+const topP = 0.95; // 核采样，0～1，控制输出多样性
+const maxOutputTokens = 8192; // 单次回复最大 token 数
+const aspectRatio = "16:9"; // "1:1" | "2:3" | "3:2" | "3:4" | "4:3" | "4:5" | "5:4" | "9:16" | "16:9" | "21:9"
+const imageSize = "2K"; // "1K" | "2K" | "4K"（仅 gemini-3-pro-image-preview 支持）
+const enableGoogleSearch = false; // 是否启用谷歌搜索（会增加延迟与计费，生图建议关闭）
 
-const response = await fetch("${BASE_URL}/v1beta/models/gemini-3-pro-image-preview:generateContent", {
-  method: "POST",
-  headers: {
-    "Authorization": "Bearer YOUR_API_KEY",
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    contents: [{ parts: [{ text: "生成一只可爱的小海獭图片" }] }],
-    systemInstruction: { parts: [{ text: "You are a helpful assistant." }] },
-    generationConfig: {
-      responseModalities: ["IMAGE"],
-      imageConfig: {
-        aspectRatio: "1:1",
-        imageSize: "2K",
-      },
+async function main() {
+  const res = await fetch(\`\${baseUrl}/v1beta/models/\${model}:generateContent\`, {
+    method: "POST",
+    headers: {
+      Authorization: \`Bearer \${apiKey}\`,
+      "Content-Type": "application/json",
     },
-  }),
-});
-
-const data = await response.json();
-const part = data.candidates[0].content.parts.find((item) => item.inlineData);
-fs.writeFileSync("gemini_sdk_generated.png", Buffer.from(part.inlineData.data, "base64"));`,
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      systemInstruction: { parts: [{ text: systemInstruction }] },
+      generationConfig: {
+        responseModalities: [...responseModalities],
+        temperature,
+        topP,
+        maxOutputTokens,
+        imageConfig: { aspectRatio, imageSize },
+      },
+      ...(enableGoogleSearch ? { tools: [{ google_search: {} }] } : {}),
+    }),
+  });
+  const data = await res.json();
+  for (const part of data.candidates?.[0]?.content?.parts ?? []) {
+    if (part.text) console.log(part.text);
+    if (part.inlineData) {
+      const buf = Buffer.from(part.inlineData.data, "base64");
+      require("fs").writeFileSync(outputFile, buf);
+      console.log("图片已保存:", outputFile);
+    }
+  }
+}
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});`,
           },
           {
             label: 'cURL',
@@ -1280,43 +1330,58 @@ fs.writeFileSync("gemini_sdk_generated.png", Buffer.from(part.inlineData.data, "
   -H "Authorization: Bearer YOUR_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{
-    "contents": [{"parts": [{"text": "生成一只可爱的小海獭图片"}]}],
+    "contents": [{"parts": [{"text": "生成一张可爱小海獭抱着贝壳的插画"}]}],
     "systemInstruction": {"parts": [{"text": "You are a helpful assistant."}]},
     "generationConfig": {
       "responseModalities": ["IMAGE"],
-      "imageConfig": {
-        "aspectRatio": "1:1",
-        "imageSize": "2K"
-      }
+      "temperature": 1.0,
+      "topP": 0.95,
+      "maxOutputTokens": 8192,
+      "imageConfig": {"aspectRatio": "16:9", "imageSize": "2K"}
     }
   }'`,
           },
         ]}
       />
       <h3>cURL 图像参数</h3>
-      <p>下面列出的是 cURL 请求里的参数名；使用 Python SDK 时请改成下划线写法。</p>
-      <DocsTable
-        headers={['参数', '可选值', '说明']}
-        rows={[
-          ['imageConfig.aspectRatio', '1:1、2:3、3:2、3:4、4:3、4:5、5:4、9:16、16:9、21:9', '控制输出图宽高比。'],
-          ['imageConfig.imageSize', '1K、2K、4K', '控制输出分辨率。4K 更慢，不建议默认使用。'],
-          ['responseModalities', '["IMAGE"] 或 ["TEXT", "IMAGE"]', '决定返回文本、图片或两者。'],
-          ['systemInstruction', '文本指令', '可选，用于设定模型行为。'],
-          ['temperature / topP / topK', '采样参数', '可按 Gemini 兼容格式传入。'],
-        ]}
-      />
+      <p>下面列出的是 cURL 请求里的参数名（驼峰）；使用 Python SDK 时请改成下划线写法，如 <InlineCode>aspectRatio</InlineCode> → <InlineCode>aspect_ratio</InlineCode>。</p>
+      <p><strong>imageConfig（generationConfig.imageConfig 或 SDK ImageConfig）：</strong></p>
+      <ul>
+        <li><InlineCode>aspectRatio</InlineCode>：宽高比，支持 1:1、2:3、3:2、3:4、4:3、4:5、5:4、9:16、16:9、21:9。</li>
+        <li><InlineCode>imageSize</InlineCode>：分辨率，支持 1K、2K、4K。</li>
+      </ul>
+      <p><strong>generationConfig 其他常用参数：</strong></p>
+      <ul>
+        <li><InlineCode>responseModalities</InlineCode>：输出类型，支持 <InlineCode>["IMAGE"]</InlineCode> 或 <InlineCode>["TEXT", "IMAGE"]</InlineCode>。</li>
+        <li><InlineCode>temperature</InlineCode>：随机度，0 到 2，越高越随机。</li>
+        <li><InlineCode>topP</InlineCode>：核采样，0 到 1。</li>
+        <li><InlineCode>maxOutputTokens</InlineCode>：最大输出 token 数，例如 8192。</li>
+        <li><InlineCode>systemInstruction</InlineCode>：系统指令，约束模型行为。</li>
+        <li><InlineCode>tools</InlineCode>：工具，例如 <InlineCode>{'[{"google_search": {}}]'}</InlineCode>。</li>
+      </ul>
       <h2>如何开启谷歌搜索？</h2>
       <p>仅 Gemini 格式支持启用谷歌搜索。在配置中传入 <InlineCode>tools</InlineCode> 即可，模型会按需调用实时网络信息并返回带引用的回答。</p>
       <p>不建议默认开启：开启后会增加延迟与计费，对纯生图场景无帮助。若无实时检索需求，建议关闭搜索。</p>
+      <p><strong>Python（SDK）：</strong></p>
       <CodeBlock
-        language='json'
-        code={`{
-  "tools": [
-    {
-      "googleSearch": {}
-    }
-  ]
-}`}
+        language='python'
+        code={`config = types.GenerateContentConfig(
+    # ... 其他参数如 response_modalities、image_config 等
+    tools=[{"google_search": {}}],
+)
+response = client.models.generate_content(model=model, contents=[prompt], config=config)`}
+      />
+      <p><strong>cURL（REST）：</strong></p>
+      <p>在请求体顶层增加 <InlineCode>tools</InlineCode> 字段：</p>
+      <CodeBlock
+        code={`curl -X POST "${BASE_URL}/v1beta/models/gemini-3-pro-image-preview:generateContent" \\
+  -H "Authorization: Bearer YOUR_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "contents": [{"parts": [{"text": "你的问题"}]}],
+    "generationConfig": { ... },
+    "tools": [{"google_search": {}}]
+  }'`}
       />
       <h2>常见问题</h2>
       <ul>
@@ -1336,8 +1401,8 @@ function NanoBananaEditPage() {
       </p>
       <ul>
         <li>端点：<InlineCode>POST {BASE_URL}/v1beta/models/gemini-3-pro-image-preview:generateContent</InlineCode></li>
-        <li>要点：<InlineCode>contents</InlineCode> 中传入图片 part 与文本 part。</li>
-        <li><InlineCode>generationConfig.responseModalities</InlineCode> 建议设为 <InlineCode>["TEXT", "IMAGE"]</InlineCode>。</li>
+        <li>要点：<InlineCode>contents</InlineCode> 中传入图片 part（<InlineCode>inlineData</InlineCode>）和文本 part（编辑说明）。</li>
+        <li><InlineCode>generationConfig.responseModalities</InlineCode> 建议设为 <InlineCode>["TEXT", "IMAGE"]</InlineCode>，从响应 <InlineCode>candidates[0].content.parts</InlineCode> 里取 <InlineCode>inline_data</InlineCode> 即编辑结果图。</li>
       </ul>
       <h2>示例代码</h2>
       <p>Python 使用下划线命名，REST / cURL 使用驼峰命名，含义相同。</p>
@@ -1349,52 +1414,86 @@ function NanoBananaEditPage() {
             code: `from google import genai
 from google.genai import types
 from PIL import Image
+from io import BytesIO
+
+base_url = "${BASE_URL}"
+api_key = "YOUR_API_KEY"
+model = "gemini-3-pro-image-preview"
+output_file = "edited.png"
+image_path = "original.png"
+edit_prompt = "给这张图戴上一顶简洁的深色礼帽，其他部分尽量保持不变。"
 
 client = genai.Client(
-    api_key="YOUR_API_KEY",
-    http_options=types.HttpOptions(api_version="v1beta", base_url="${BASE_URL}"),
+    api_key=api_key,
+    http_options=types.HttpOptions(api_version="v1beta", base_url=base_url),
 )
 
-image = Image.open("original.png")
+image = Image.open(image_path)
 response = client.models.generate_content(
-    model="gemini-3-pro-image-preview",
-    contents=["给这张图加上一顶时尚的礼帽，保持其余部分不变。", image],
+    model=model,
+    contents=[edit_prompt, image],
     config=types.GenerateContentConfig(response_modalities=["TEXT", "IMAGE"]),
 )
 
-for part in response.candidates[0].content.parts:
-    if part.inline_data:
-        with open("edited.png", "wb") as f:
-            f.write(part.inline_data.data)`,
+for part in response.parts:
+    if part.text is not None:
+        print(part.text)
+    elif part.inline_data is not None:
+        Image.open(BytesIO(part.inline_data.data)).save(output_file)
+        print(f"编辑后图片已保存: {output_file}")`,
           },
           {
             label: 'TypeScript',
             language: 'typescript',
-            code: `import fs from "fs";
+            code: `// ============ 可配置参数（集中管理） ============
+const baseUrl = "${BASE_URL}";
+const apiKey = "YOUR_API_KEY";
+const model = "gemini-3-pro-image-preview";
+const outputFile = "edited.png";
+const imagePath = "gemini_sdk_generated.png"; // 原图路径，可用生图脚本生成的图
+const editPrompt = "给这张图戴上一顶简洁的深色礼帽，其他部分尽量保持不变。";
+const aspectRatio = "16:9"; // "1:1" | "2:3" | "3:2" | "3:4" | "4:3" | "4:5" | "5:4" | "9:16" | "16:9" | "21:9"
+const imageSize = "2K"; // "1K" | "2K" | "4K"（仅 gemini-3-pro-image-preview 支持）
 
-const imageBase64 = fs.readFileSync("original.png").toString("base64");
-const response = await fetch("${BASE_URL}/v1beta/models/gemini-3-pro-image-preview:generateContent", {
+async function main() {
+const fs = require("fs");
+const imageBuf = fs.readFileSync(imagePath);
+const imageBase64 = imageBuf.toString("base64");
+
+const res = await fetch(\`\${baseUrl}/v1beta/models/\${model}:generateContent\`, {
   method: "POST",
   headers: {
-    "Authorization": "Bearer YOUR_API_KEY",
+    Authorization: \`Bearer \${apiKey}\`,
     "Content-Type": "application/json",
   },
   body: JSON.stringify({
     contents: [{
       parts: [
         { inlineData: { mimeType: "image/png", data: imageBase64 } },
-        { text: "给这张图加上一顶时尚的礼帽，保持其余部分不变。" },
+        { text: editPrompt },
       ],
     }],
     generationConfig: {
       responseModalities: ["TEXT", "IMAGE"],
+      imageConfig: { aspectRatio, imageSize },
     },
   }),
 });
 
-const data = await response.json();
-const part = data.candidates[0].content.parts.find((item) => item.inlineData);
-fs.writeFileSync("edited.png", Buffer.from(part.inlineData.data, "base64"));`,
+const data = await res.json();
+for (const part of data.candidates?.[0]?.content?.parts ?? []) {
+  if (part.text) console.log(part.text);
+  if (part.inlineData) {
+    const buf = Buffer.from(part.inlineData.data, "base64");
+    fs.writeFileSync(outputFile, buf);
+    console.log("编辑后图片已保存:", outputFile);
+  }
+}
+}
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});`,
           },
           {
             label: 'cURL',
@@ -1408,7 +1507,7 @@ curl -X POST "${BASE_URL}/v1beta/models/gemini-3-pro-image-preview:generateConte
     "contents": [{
       "parts": [
         { "inlineData": { "mimeType": "image/png", "data": "<BASE64_原图>" }},
-        { "text": "给这张图加上一顶时尚的礼帽，保持其余部分不变。" }
+        { "text": "给这张图戴上一顶简洁的深色礼帽，其他部分尽量保持不变。" }
       ]
     }],
     "generationConfig": {
@@ -1429,11 +1528,49 @@ curl -X POST "${BASE_URL}/v1beta/models/gemini-3-pro-image-preview:generateConte
       />
       <p>同一端点、同一认证方式，仅 <InlineCode>contents</InlineCode> 与是否传 <InlineCode>imageConfig</InlineCode> 不同。</p>
       <h2>多张图</h2>
-      <p>在 <InlineCode>contents</InlineCode> 的 <InlineCode>parts</InlineCode> 里按顺序放入多张图，每张图一个 <InlineCode>inlineData</InlineCode>，最后放一条文本编辑指令即可。</p>
-      <p>例如：把第一张图的主体合成到第二张图的背景上。</p>
+      <p>在 <InlineCode>contents</InlineCode> 的 <InlineCode>parts</InlineCode> 里按顺序放入多张图，每张图一个 <InlineCode>inlineData</InlineCode>，最后放一条文本编辑指令即可，模型会基于所有图片和指令返回结果。</p>
+      <p><strong>Python：</strong>在 <InlineCode>contents</InlineCode> 中传入多个图片对象和一条文本。</p>
+      <CodeBlock
+        language='python'
+        code={`image1 = Image.open("photo.png")
+image2 = Image.open("background.png")
+response = client.models.generate_content(
+    model=model,
+    contents=["把第一张图的主体提取出来，合成到第二张图的环境中。", image1, image2],
+    config=types.GenerateContentConfig(response_modalities=["TEXT", "IMAGE"]),
+)`}
+      />
+      <p><strong>cURL：</strong>在 <InlineCode>contents[0].parts</InlineCode> 里依次写多个 <InlineCode>inlineData</InlineCode>，最后写一个 <InlineCode>text</InlineCode>。</p>
+      <CodeBlock
+        language='json'
+        code={`"contents": [{
+  "parts": [
+    { "inlineData": { "mimeType": "image/png", "data": "<BASE64_图1>" }},
+    { "inlineData": { "mimeType": "image/png", "data": "<BASE64_图2>" }},
+    { "text": "把第一张图的主体合成到第二张图的环境中。" }
+  ]
+}]`}
+      />
       <h2>使用图片 URL</h2>
       <p>接口只接受 <InlineCode>inlineData</InlineCode>（base64）或通过 File API 的 <InlineCode>fileData</InlineCode>，不能直接传图片 URL。</p>
       <p>如果图片在网络上，需要先下载，再转成 base64 或交给 SDK 处理。</p>
+      <p><strong>Python 示例：</strong>从 URL 下载后交给 SDK。</p>
+      <CodeBlock
+        language='python'
+        code={`import requests
+from io import BytesIO
+
+image_url = "https://example.com/photo.jpg"
+resp = requests.get(image_url)
+image = Image.open(BytesIO(resp.content))
+
+response = client.models.generate_content(
+    model=model,
+    contents=["给这张图添加一顶深色礼帽。", image],
+    config=types.GenerateContentConfig(response_modalities=["TEXT", "IMAGE"]),
+)`}
+      />
+      <p><strong>cURL：</strong>需在本地先把 URL 的图下载并转成 base64，再把得到的字符串填入 <InlineCode>inlineData.data</InlineCode>。</p>
     </>
   )
 }
@@ -1487,17 +1624,32 @@ claude --version`}
         <li><InlineCode>ANTHROPIC_AUTH_TOKEN</InlineCode>：你的 API 密钥。</li>
       </ul>
       <h3>方法 1：永久配置（推荐）</h3>
-      <p>将这行添加到 shell 配置文件中：</p>
+      <p>此方法可以安全地保存您的 API 密钥并在会话之间保持。</p>
+      <p>macOS 和 Linux</p>
+      <p>将这些行添加到您的 shell 配置文件中：</p>
+      <p><strong>对于 Bash</strong>（<InlineCode>~/.bashrc</InlineCode> 或 <InlineCode>~/.bash_profile</InlineCode>）：</p>
       <CodeBlock
         code={`export ANTHROPIC_AUTH_TOKEN="sk-your-api-key"`}
       />
-      <p>对于 Zsh 添加到 <InlineCode>~/.zshrc</InlineCode>，对于 Bash 添加到 <InlineCode>~/.bashrc</InlineCode> 或 <InlineCode>~/.bash_profile</InlineCode>，然后应用更改：</p>
+      <p><strong>对于 Zsh</strong>（<InlineCode>~/.zshrc</InlineCode>）：</p>
+      <CodeBlock
+        code={`export ANTHROPIC_AUTH_TOKEN="sk-your-api-key"`}
+      />
+      <p>应用更改：</p>
       <CodeBlock code='source ~/.zshrc  # 或 source ~/.bashrc' />
-      <p>PowerShell 持久配置：</p>
+      <p>Windows</p>
+      <p><strong>使用 PowerShell（持久性）：</strong></p>
+      <ol>
+        <li>以管理员身份打开 PowerShell</li>
+        <li>运行这些命令：</li>
+      </ol>
       <CodeBlock
         code={`[System.Environment]::SetEnvironmentVariable('ANTHROPIC_AUTH_TOKEN', 'sk-your-api-key', 'User')`}
       />
-      <p>命令提示符持久配置：</p>
+      <ol start={3}>
+        <li>重启终端以应用更改</li>
+      </ol>
+      <p><strong>使用命令提示符（持久性）：</strong></p>
       <CodeBlock
         code={`setx ANTHROPIC_AUTH_TOKEN "sk-your-api-key"`}
       />
@@ -1687,10 +1839,12 @@ function CodexPage() {
       </ul>
       <h3>方法 1：手动配置</h3>
       <p>导航到配置目录并创建或编辑 <InlineCode>config.toml</InlineCode>。</p>
+      <p><strong>macOS/Linux：</strong></p>
       <CodeBlock
         code={`mkdir -p ~/.codex
 nano ~/.codex/config.toml`}
       />
+      <p><strong>Windows：</strong></p>
       <CodeBlock
         code={`mkdir $env:USERPROFILE\\.codex -Force
 notepad $env:USERPROFILE\\.codex\\config.toml`}
@@ -1707,9 +1861,9 @@ base_url = "${API_BASE_URL}"
 env_key = "OPENAI_API_KEY"  # 这是指环境变量的名称
 wire_api = "responses"`}
       />
-      <p><InlineCode>env_key</InlineCode> 表示 Codex CLI 读取哪个环境变量，下一步会把 API 密钥设置到这个变量中。</p>
+      <p><strong>注意:</strong> <InlineCode>env_key</InlineCode> 表示 Codex CLI 读取哪个环境变量，下一步会把 API 密钥设置到这个变量中。</p>
       <h3>方法 2：一键配置</h3>
-      <p>macOS / Linux：</p>
+      <p><strong>macOS/Linux：</strong></p>
       <CodeBlock
         code={`mkdir -p ~/.codex && cat > ~/.codex/config.toml << 'EOF'
 model = "gpt-5.4"
@@ -1723,7 +1877,7 @@ env_key = "OPENAI_API_KEY"
 wire_api = "responses"
 EOF`}
       />
-      <p>Windows PowerShell：</p>
+      <p><strong>Windows PowerShell：</strong></p>
       <CodeBlock
         code={`$configPath = "$env:USERPROFILE\\.codex"
 New-Item -ItemType Directory -Force -Path $configPath | Out-Null
@@ -1739,33 +1893,44 @@ env_key = "OPENAI_API_KEY"
 wire_api = "responses"
 "@ | Out-File -FilePath "$configPath\\config.toml" -Encoding utf8`}
       />
-      <h2>设置 API 密钥</h2>
-      <p>尽管变量名为 <InlineCode>OPENAI_API_KEY</InlineCode>，这里应填写当前平台的 API 密钥。Codex CLI 使用该标准变量名保持兼容性。</p>
+        <p><strong>注意:</strong> 上述配置将 Codex CLI 设置为从 OPENAI_API_KEY 环境变量读取您的 API 密钥，您将在下一步中使用 Infinity API 密钥配置该变量。</p>
+
+        <h2>设置 API 密钥</h2>
+      <p>配置 TOML 文件后，将您的 API 密钥设置为环境变量。</p>
+      <p><strong>重要提示：</strong> 尽管变量名为 <InlineCode>OPENAI_API_KEY</InlineCode>，但您应该使用您的 <strong>API 密钥</strong>（而不是 OpenAI 密钥）。Codex CLI 使用此标准变量名以保持兼容性。</p>
       <h3>临时（仅当前会话）</h3>
+      <p><strong>macOS/Linux：</strong></p>
       <CodeBlock code='export OPENAI_API_KEY="sk-your-api-key"' />
+      <p><strong>Windows PowerShell：</strong></p>
       <CodeBlock code='$env:OPENAI_API_KEY="sk-your-api-key"' />
+      <p><strong>Windows 命令提示符：</strong></p>
       <CodeBlock code='set OPENAI_API_KEY=sk-your-api-key' />
       <h3>永久配置</h3>
-      <p>macOS / Linux (Bash)：添加到 <InlineCode>~/.bashrc</InlineCode> 或 <InlineCode>~/.bash_profile</InlineCode>：</p>
+      <p><strong>macOS/Linux (Bash)：</strong></p>
+      <p>添加到 <InlineCode>~/.bashrc</InlineCode> 或 <InlineCode>~/.bash_profile</InlineCode>：</p>
       <CodeBlock code='export OPENAI_API_KEY="sk-your-api-key"' />
+      <p>应用更改：</p>
       <CodeBlock code='source ~/.bashrc  # 或 source ~/.bash_profile' />
-      <p>macOS / Linux (Zsh)：添加到 <InlineCode>~/.zshrc</InlineCode>：</p>
+      <p><strong>macOS/Linux (Zsh)：</strong></p>
+      <p>添加到 <InlineCode>~/.zshrc</InlineCode>：</p>
       <CodeBlock code='export OPENAI_API_KEY="sk-your-api-key"' />
+      <p>应用更改：</p>
       <CodeBlock code='source ~/.zshrc' />
-      <p>Windows PowerShell：</p>
+      <p><strong>Windows PowerShell：</strong></p>
       <CodeBlock code="[System.Environment]::SetEnvironmentVariable('OPENAI_API_KEY', 'sk-your-api-key', 'User')" />
-      <p>Windows 命令提示符：</p>
+      <p><strong>Windows 命令提示符：</strong></p>
       <CodeBlock code='setx OPENAI_API_KEY "sk-your-api-key"' />
       <h2>验证配置</h2>
-      <p>检查 Node.js 安装：</p>
-      <CodeBlock code={`node -v
-npm -v`} />
-      <p>验证 Codex CLI 安装：</p>
+      <p><strong>检查 Node.js 安装：</strong></p>
+      <CodeBlock code={`node -v\nnpm -v`} />
+      <p><strong>验证 Codex CLI 安装：</strong></p>
       <CodeBlock code='codex --version' />
-      <p>测试 API 连接：</p>
+      <p><strong>测试 API 连接：</strong></p>
       <CodeBlock code='codex "Hi"' />
-      <p>检查环境变量：</p>
+      <p><strong>检查环境变量：</strong></p>
+      <p><strong>macOS/Linux：</strong></p>
       <CodeBlock code='echo $OPENAI_API_KEY' />
+      <p><strong>Windows PowerShell：</strong></p>
       <CodeBlock code='echo $env:OPENAI_API_KEY' />
       <h2>故障排除</h2>
       <h3>401 未授权错误</h3>
@@ -1794,12 +1959,19 @@ npm -v`} />
         <li>确保文件保存为 <InlineCode>config.toml</InlineCode>。</li>
       </ul>
       <h3>找不到 Codex 命令</h3>
-      <p>macOS / Linux：</p>
+      <p><strong>macOS/Linux：</strong></p>
       <CodeBlock
-        code={`npm config get prefix
+        code={`# 检查 npm 全局 bin 是否在 PATH 中
+npm config get prefix
+
+# 如果需要，在 ~/.zshrc 或 ~/.bashrc 中添加到 PATH:
 export PATH="$(npm config get prefix)/bin:$PATH"`}
       />
-      <p>Windows：确认 npm 全局路径在系统 PATH 中，npm 安装后重启终端。</p>
+      <p><strong>Windows：</strong></p>
+      <ul>
+        <li>验证 npm 全局路径是否在系统 PATH 中</li>
+        <li>npm 安装后重启终端</li>
+      </ul>
     </>
   )
 }
