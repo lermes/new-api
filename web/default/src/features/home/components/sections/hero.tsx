@@ -46,8 +46,12 @@ const MoreIcon = () => (
 export function Hero(props: HeroProps) {
   const { t } = useTranslation()
   const { status } = useStatus()
+  const configuredDocsUrl =
+    typeof status?.docs_link === 'string' ? status.docs_link.trim() : ''
   const docsUrl =
-    (status?.docs_link as string | undefined) || 'https://docs.newapi.pro'
+    configuredDocsUrl && configuredDocsUrl !== 'https://docs.newapi.pro'
+      ? configuredDocsUrl
+      : '/docs'
 
   const renderDocsButton = () => {
     const isExternal = docsUrl.startsWith('http')
@@ -116,10 +120,8 @@ export function Hero(props: HeroProps) {
             className='landing-animate-fade-up text-[clamp(2.25rem,4.5vw,3.25rem)] leading-[1.15] font-bold tracking-tight'
             style={{ animationDelay: '60ms' }}
           >
-            {t('Unified API Gateway for')}
-            <br />
             <span className='bg-gradient-to-r from-blue-400 via-violet-400 to-purple-500 bg-clip-text text-transparent'>
-              {t('Vast Range of AI Models')}
+              {t('The Unified Interface For LLMs')}
             </span>
           </h1>
           <p
